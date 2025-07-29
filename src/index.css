@@ -2,43 +2,71 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* LMS Design System - Modern Education Platform Colors & Styles */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Background & Surface Colors */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --surface: 240 6% 6%;
+    --surface-elevated: 240 6% 8%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Card & Modal Colors */
+    --card: 240 6% 6%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 240 6% 8%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Brand Colors - Education Theme */
+    --primary: 262 83% 58%;        /* Purple - Learning focus */
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 262 83% 68%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217 91% 60%;      /* Blue - Professional */
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 142 76% 36%;         /* Green - Success/Progress */
+    --accent-foreground: 0 0% 98%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* UI State Colors */
+    --muted: 240 6% 10%;
+    --muted-foreground: 240 5% 64.9%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 240 6% 12%;
+    --input: 240 6% 12%;
+    --ring: 262 83% 58%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Video Player & Learning Colors */
+    --video-bg: 240 10% 2%;
+    --video-control: 240 6% 15%;
+    --video-control-hover: 240 6% 20%;
+    --progress-bg: 240 6% 15%;
+    --progress-fill: 262 83% 58%;
+
+    /* Course & Learning UI */
+    --course-sidebar: 240 6% 5%;
+    --lesson-completed: 142 76% 36%;
+    --lesson-current: 262 83% 58%;
+    --lesson-locked: 240 5% 45%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(262 83% 58%), hsl(262 83% 68%));
+    --gradient-learning: linear-gradient(135deg, hsl(217 91% 60%), hsl(262 83% 58%));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 36%), hsl(142 76% 46%));
+
+    /* Shadows & Effects */
+    --shadow-video: 0 20px 50px -10px hsl(240 10% 2% / 0.8);
+    --shadow-card: 0 8px 30px -6px hsl(240 10% 2% / 0.3);
+    --shadow-glow: 0 0 40px hsl(262 83% 58% / 0.3);
+
+    --sidebar-background: 240 6% 5%;
 
     --sidebar-foreground: 240 5.3% 26.1%;
 

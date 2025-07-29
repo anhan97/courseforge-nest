@@ -82,7 +82,7 @@ export const LearningInterface = () => {
       {/* Main Learning Area */}
       <div className="flex-1 flex flex-col">
         {/* Video Section */}
-        <div className="bg-surface border-b border-border">
+        <div className="bg-gray-900 border-b border-gray-800">
           <div className="max-w-4xl mx-auto p-6">
             <VideoPlayer
               videoId={currentLesson.videoId}
@@ -253,7 +253,7 @@ export const LearningInterface = () => {
           </Tabs>
 
           {/* Navigation */}
-          <div className="flex items-center justify-between pt-8 border-t border-border mt-8">
+          <div className="flex items-center justify-between pt-8 border-t border-gray-700 mt-8">
             <Button
               onClick={goToPreviousLesson}
               variant="outline"
@@ -269,7 +269,7 @@ export const LearningInterface = () => {
 
             <Button
               onClick={goToNextLesson}
-              className="flex items-center space-x-2 bg-gradient-primary"
+              className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-blue-600"
             >
               <span>Next Lesson</span>
               <ChevronRight className="h-4 w-4" />

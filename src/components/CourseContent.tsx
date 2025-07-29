@@ -119,21 +119,21 @@ export const CourseContent = ({
 
   const renderLessonIcon = (lesson: Lesson) => {
     if (lesson.isCompleted) {
-      return <CheckCircle className="h-4 w-4 text-lesson-completed" />;
+      return <CheckCircle className="h-4 w-4 text-green-500" />;
     }
     if (lesson.isCurrent) {
-      return <PlayCircle className="h-4 w-4 text-lesson-current" />;
+      return <PlayCircle className="h-4 w-4 text-purple-500" />;
     }
     if (lesson.isLocked) {
-      return <Lock className="h-4 w-4 text-lesson-locked" />;
+      return <Lock className="h-4 w-4 text-gray-500" />;
     }
     return <Circle className="h-4 w-4 text-muted-foreground" />;
   };
 
   return (
-    <div className="w-80 bg-surface border-r border-border flex flex-col h-screen">
+    <div className="w-80 bg-gray-900 border-r border-gray-800 flex flex-col h-screen">
       {/* Header */}
-      <div className="p-4 border-b border-border">
+      <div className="p-4 border-b border-gray-700">
         <h2 className="font-semibold text-lg mb-2">Course Content</h2>
         <div className="space-y-2">
           <div className="flex justify-between text-sm text-muted-foreground">
@@ -147,9 +147,9 @@ export const CourseContent = ({
       {/* Course Modules */}
       <div className="flex-1 overflow-y-auto">
         {modules.map((module, moduleIndex) => (
-          <div key={module.id} className="border-b border-border/50">
+          <div key={module.id} className="border-b border-gray-700">
             {/* Module Header */}
-            <div className="p-4 bg-surface-elevated">
+            <div className="p-4 bg-gray-800">
               <div className="flex items-center justify-between mb-2">
                 <h3 className="font-medium text-sm">
                   Module {moduleIndex + 1}: {module.title}
@@ -179,9 +179,9 @@ export const CourseContent = ({
                     variant="ghost"
                     className={`w-full justify-start p-3 h-auto text-left transition-all duration-200 ${
                       lesson.isCurrent 
-                        ? 'bg-primary/10 border border-primary/20' 
+                        ? 'bg-purple-500/10 border border-purple-500/20' 
                         : lesson.isCompleted 
-                        ? 'bg-lesson-completed/5' 
+                        ? 'bg-green-500/5' 
                         : 'hover:bg-muted'
                     } ${lesson.isLocked ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
                     disabled={lesson.isLocked}
@@ -229,7 +229,7 @@ export const CourseContent = ({
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-border bg-surface-elevated">
+      <div className="p-4 border-t border-gray-700 bg-gray-800">
         <div className="text-xs text-muted-foreground text-center">
           💡 Tip: Complete lessons to unlock the next module
         </div>

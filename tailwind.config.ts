@@ -24,8 +24,6 @@ export default {
 				ring: 'hsl(var(--ring))',
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
-				surface: 'hsl(var(--surface))',
-				'surface-elevated': 'hsl(var(--surface-elevated))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))'
@@ -63,33 +61,7 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
-				},
-				// LMS Specific Colors
-				video: {
-					bg: 'hsl(var(--video-bg))',
-					control: 'hsl(var(--video-control))',
-					'control-hover': 'hsl(var(--video-control-hover))'
-				},
-				progress: {
-					bg: 'hsl(var(--progress-bg))',
-					fill: 'hsl(var(--progress-fill))'
-				},
-				lesson: {
-					completed: 'hsl(var(--lesson-completed))',
-					current: 'hsl(var(--lesson-current))',
-					locked: 'hsl(var(--lesson-locked))'
 				}
-			},
-			backgroundImage: {
-				'gradient-primary': 'var(--gradient-primary)',
-				'gradient-learning': 'var(--gradient-learning)',
-				'gradient-success': 'var(--gradient-success)'
-			},
-			boxShadow: {
-				'video': 'var(--shadow-video)',
-				'card-custom': 'var(--shadow-card)',
-				'glow': 'var(--shadow-glow)'
-			}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

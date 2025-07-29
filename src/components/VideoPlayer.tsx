@@ -93,13 +93,13 @@ export const VideoPlayer = ({
   return (
     <div 
       ref={videoRef}
-      className="relative bg-video-bg rounded-lg overflow-hidden shadow-video group"
+      className="relative bg-black rounded-lg overflow-hidden shadow-2xl group"
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
       onMouseMove={() => setShowControls(true)}
     >
       {/* Video Container */}
-      <div className="relative aspect-video bg-video-bg">
+      <div className="relative aspect-video bg-black">
         <iframe
           src={embedUrl}
           className="w-full h-full"

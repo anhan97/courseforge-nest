@@ -8,16 +8,16 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 interface Lesson {
   id: string;
   title: string;
-  duration: string;
-  isCurrent: boolean;
-  hasAttachments?: boolean;
+  videoDuration?: number;
+  isFree?: boolean;
+  description?: string;
 }
 
 interface Module {
   id: string;
   title: string;
+  description?: string;
   lessons: Lesson[];
-  totalDuration: string;
 }
 
 interface CourseContentProps {
@@ -83,7 +83,7 @@ const sampleModules: Module[] = [
 ];
 
 export const CourseContent = ({ 
-  modules = sampleModules, 
+  modules, 
   onLessonSelect,
   currentLessonId 
 }: CourseContentProps) => {
@@ -94,10 +94,17 @@ export const CourseContent = ({
   };
 
   const renderLessonIcon = (lesson: Lesson) => {
-    if (lesson.isCurrent) {
+    const isCurrent = lesson.id === currentLessonId;
+    if (isCurrent) {
       return <PlayCircle className="h-4 w-4 text-purple-500" />;
     }
     return <PlayCircle className="h-4 w-4 text-muted-foreground" />;
+  };
+
+  const formatDuration = (duration?: number) => {
+    if (!duration) return 'N/A';
+    const minutes = Math.ceil(duration / 60);
+    return `${minutes}min`;
   };
 
   return (
@@ -127,10 +134,6 @@ export const CourseContent = ({
                     </h3>
                   </div>
                   <div className="flex items-center text-xs text-muted-foreground space-x-4">
-                    <div className="flex items-center space-x-1">
-                      <Clock className="h-3 w-3" />
-                      <span>{module.totalDuration}</span>
-                    </div>
                     <Badge variant="secondary" className="text-xs">
                       {module.lessons.length} lessons
                     </Badge>
@@ -145,7 +148,7 @@ export const CourseContent = ({
                       onClick={() => onLessonSelect(lesson.id)}
                       variant="ghost"
                       className={`w-full justify-start p-3 h-auto text-left transition-all duration-200 ${
-                        lesson.isCurrent 
+                        lesson.id === currentLessonId 
                           ? 'bg-purple-500/10 border border-purple-500/20' 
                           : 'hover:bg-muted'
                       }`}
@@ -158,24 +161,22 @@ export const CourseContent = ({
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1">
                             <p className={`text-sm font-medium truncate ${
-                              lesson.isCurrent ? 'text-primary' : 'text-foreground'
+                              lesson.id === currentLessonId ? 'text-primary' : 'text-foreground'
                             }`}>
                               {lessonIndex + 1}. {lesson.title}
                             </p>
+                            {lesson.isFree && (
+                              <Badge variant="outline" className="text-xs bg-green-50 text-green-700 border-green-200">
+                                Free
+                              </Badge>
+                            )}
                           </div>
                           
                           <div className="flex items-center justify-between">
                             <div className="flex items-center space-x-1 text-xs text-muted-foreground">
                               <Clock className="h-3 w-3" />
-                              <span>{lesson.duration}</span>
+                              <span>{formatDuration(lesson.videoDuration)}</span>
                             </div>
-                            
-                            {lesson.hasAttachments && (
-                              <div className="flex items-center space-x-1">
-                                <FileText className="h-3 w-3 text-muted-foreground" />
-                                <Download className="h-3 w-3 text-muted-foreground" />
-                              </div>
-                            )}
                           </div>
                         </div>
                       </div>

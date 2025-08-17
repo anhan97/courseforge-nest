@@ -1,0 +1,55 @@
+const fs = require('fs');
+const path = require('path');
+
+const testEnvContent = `# Test Environment Configuration
+NODE_ENV=test
+PORT=5001
+API_VERSION=v1
+
+# Test Database Configuration
+# Use SQLite for faster tests
+DATABASE_URL="file:./test.db"
+
+# JWT Test Configuration  
+JWT_SECRET="test-jwt-secret-key-for-testing-only-do-not-use-in-production"
+JWT_REFRESH_SECRET="test-refresh-secret-key-for-testing-only-do-not-use-in-production"
+JWT_EXPIRE_TIME="1h"
+JWT_REFRESH_EXPIRE_TIME="7d"
+
+# CORS Test Configuration
+FRONTEND_URL="http://localhost:3000"
+ALLOWED_ORIGINS="http://localhost:3000,http://localhost:5173,http://localhost:8080,http://localhost:8081"
+
+# Password Test Configuration (Lower rounds for faster tests)
+BCRYPT_SALT_ROUNDS=4
+
+# Rate Limiting Test Configuration
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=1000
+
+# Test Email Configuration (Mock)
+SMTP_HOST=smtp.ethereal.email
+SMTP_PORT=587
+SMTP_USER=test@ethereal.email
+SMTP_PASS=test-password
+
+# Test File Storage Configuration (Mock)
+CLOUDINARY_CLOUD_NAME=test-cloud
+CLOUDINARY_API_KEY=test-api-key
+CLOUDINARY_API_SECRET=test-api-secret
+
+# Test Payment Configuration (Mock)
+STRIPE_SECRET_KEY=sk_test_mock_key
+STRIPE_WEBHOOK_SECRET=whsec_test_mock_secret
+`;
+
+const envTestPath = path.join(__dirname, '..', '.env.test');
+
+try {
+  fs.writeFileSync(envTestPath, testEnvContent);
+  console.log('✅ .env.test file created successfully!');
+  console.log('📁 Location:', envTestPath);
+  console.log('🧪 Test environment configuration ready.');
+} catch (error) {
+  console.error('❌ Error creating .env.test file:', error.message);
+}

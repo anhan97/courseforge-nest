@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { apiClient, type Course, type Lesson as ApiLesson } from '../lib/api';
+import { useToast } from '../hooks/use-toast';
 import { VideoPlayer } from './VideoPlayer';
 import { CourseContent } from './CourseContent';
 import { ChevronLeft, ChevronRight, BookOpen, Download, Star, MessageCircle } from 'lucide-react';
@@ -7,76 +10,171 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-interface LessonData {
-  id: string;
-  title: string;
-  description: string;
-  videoId: string;
-  duration: string;
-  attachments?: Array<{
-    name: string;
-    url: string;
-    type: string;
-  }>;
-}
-
-// Sample lesson data
-const currentLesson: LessonData = {
-  id: '3',
-  title: 'Your First React Component',
-  description: 'Learn how to create your first React component from scratch. In this lesson, we\'ll cover the basics of component creation, props, and how to render components in your application.',
-  videoId: '3qcpHQNAZds', // Extracted from the YouTube URL provided
-  duration: '18:20',
-  attachments: [
-    {
-      name: 'Component-Starter-Code.zip',
-      url: '#',
-      type: 'zip'
-    },
-    {
-      name: 'React-Components-Guide.pdf',
-      url: '#',
-      type: 'pdf'
-    }
-  ]
-};
-
 export const LearningInterface = () => {
-  const [currentLessonId, setCurrentLessonId] = useState('3');
+  const { courseId, moduleId, lessonId } = useParams<{
+    courseId: string;
+    moduleId: string;
+    lessonId: string;
+  }>();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  const [course, setCourse] = useState<Course | null>(null);
+  const [currentLesson, setCurrentLesson] = useState<ApiLesson | null>(null);
+  const [lessonData, setLessonData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const [showNotes, setShowNotes] = useState(false);
 
-  const handleLessonSelect = (lessonId: string) => {
-    setCurrentLessonId(lessonId);
-    // In a real app, you'd fetch lesson data here
+  useEffect(() => {
+    if (courseId && moduleId && lessonId) {
+      loadCourseData();
+    }
+  }, [courseId, moduleId, lessonId]);
+
+  const loadCourseData = async () => {
+    if (!courseId || !moduleId || !lessonId) return;
+    
+    try {
+      setLoading(true);
+      
+      // Load course content with modules and lessons
+      const courseResponse = await apiClient.getCourseContent(courseId);
+      
+      if (courseResponse.success && courseResponse.data) {
+        setCourse(courseResponse.data);
+        
+        // Find the current lesson
+        const currentModule = courseResponse.data.modules?.find(m => m.id === moduleId);
+        const lesson = currentModule?.lessons.find(l => l.id === lessonId);
+        
+        if (lesson) {
+          setCurrentLesson(lesson);
+          
+          // Load detailed lesson data
+          try {
+            const lessonResponse = await apiClient.getLesson(lessonId);
+            if (lessonResponse.success && lessonResponse.data) {
+              setLessonData(lessonResponse.data);
+            }
+          } catch (lessonError) {
+            console.log('Could not load detailed lesson data:', lessonError);
+          }
+        } else {
+          toast({
+            title: "Lesson Not Found",
+            description: "The lesson you're looking for doesn't exist.",
+            variant: "destructive",
+          });
+          navigate(`/courses/${courseId}`);
+        }
+      } else {
+        toast({
+          title: "Error",
+          description: courseResponse.error || "Failed to load course",
+          variant: "destructive",
+        });
+        navigate('/courses');
+      }
+    } catch (error) {
+      console.error('Failed to load course data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load course. Please try again.",
+        variant: "destructive",
+      });
+      navigate('/courses');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleProgress = (progress: number) => {
-    console.log(`Lesson progress: ${progress}%`);
-    // In a real app, you'd save progress to backend
+  const handleLessonSelect = (selectedLessonId: string) => {
+    if (!course || !courseId) return;
+    
+    // Find the module containing this lesson
+    for (const module of course.modules || []) {
+      const lesson = module.lessons.find(l => l.id === selectedLessonId);
+      if (lesson) {
+        navigate(`/courses/${courseId}/modules/${module.id}/lessons/${selectedLessonId}`);
+        return;
+      }
+    }
   };
 
-  const handleLessonComplete = () => {
-    console.log('Lesson completed!');
-    // In a real app, you'd update completion status
+  const handleProgress = async (progress: number) => {
+    if (!lessonId) return;
+    
+    try {
+      await apiClient.updateLessonProgress(lessonId, {
+        watchTime: progress,
+        lastPosition: progress,
+      });
+    } catch (error) {
+      console.error('Failed to save progress:', error);
+    }
+  };
+
+  const handleLessonComplete = async () => {
+    if (!lessonId) return;
+    
+    try {
+      await apiClient.updateLessonProgress(lessonId, {
+        isCompleted: true,
+      });
+      
+      toast({
+        title: "Lesson Completed!",
+        description: "Great job! You've completed this lesson.",
+      });
+    } catch (error) {
+      console.error('Failed to mark lesson as completed:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save progress. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const goToPreviousLesson = () => {
-    // Navigate to previous lesson logic
+    // TODO: Implement navigation to previous lesson
     console.log('Previous lesson');
   };
 
   const goToNextLesson = () => {
-    // Navigate to next lesson logic
+    // TODO: Implement navigation to next lesson
     console.log('Next lesson');
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  if (!course || !currentLesson) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Lesson not found</h1>
+          <p className="text-gray-600 mb-4">The lesson you're looking for doesn't exist.</p>
+          <Button onClick={() => navigate('/courses')}>
+            ← Back to courses
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex">
       {/* Course Content Sidebar */}
       <CourseContent 
-        modules={[]} // Will use default sample data
+        modules={course.modules || []}
         onLessonSelect={handleLessonSelect}
-        currentLessonId={currentLessonId}
+        currentLessonId={lessonId || ''}
       />
 
       {/* Main Learning Area */}
@@ -84,13 +182,21 @@ export const LearningInterface = () => {
         {/* Video Section */}
         <div className="bg-gray-900 border-b border-gray-800">
           <div className="max-w-4xl mx-auto p-6">
-            <VideoPlayer
-              videoId={currentLesson.videoId}
-              title={currentLesson.title}
-              duration={currentLesson.duration}
-              onProgress={handleProgress}
-              onComplete={handleLessonComplete}
-            />
+            {lessonData?.videoUrl ? (
+              <VideoPlayer
+                videoId={lessonData.videoUrl}
+                title={currentLesson.title}
+                duration={currentLesson.videoDuration ? `${Math.ceil(currentLesson.videoDuration / 60)}min` : 'N/A'}
+                onProgress={handleProgress}
+                onComplete={handleLessonComplete}
+              />
+            ) : (
+              <div className="bg-gray-200 rounded-lg flex items-center justify-center h-64">
+                <div className="text-center">
+                  <p className="text-gray-600">No video available for this lesson</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -104,12 +210,12 @@ export const LearningInterface = () => {
                 <div className="flex items-center space-x-4 text-sm text-muted-foreground">
                   <div className="flex items-center space-x-1">
                     <BookOpen className="h-4 w-4" />
-                    <span>Lesson 3 of 12</span>
+                    <span>Lesson content</span>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <span>Duration: {currentLesson.duration}</span>
+                    <span>Duration: {currentLesson.videoDuration ? `${Math.ceil(currentLesson.videoDuration / 60)}min` : 'N/A'}</span>
                   </div>
-                  <Badge variant="secondary">In Progress</Badge>
+                  <Badge variant="secondary">Learning</Badge>
                 </div>
               </div>
               
@@ -146,7 +252,7 @@ export const LearningInterface = () => {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground leading-relaxed">
-                    {currentLesson.description}
+                    {currentLesson.description || lessonData?.description || 'No description available for this lesson.'}
                   </p>
                 </CardContent>
               </Card>
@@ -189,19 +295,21 @@ export const LearningInterface = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  {currentLesson.attachments && currentLesson.attachments.length > 0 ? (
+                  {lessonData?.attachments && lessonData.attachments.length > 0 ? (
                     <div className="space-y-3">
-                      {currentLesson.attachments.map((attachment, index) => (
+                      {lessonData.attachments.map((attachment: any, index: number) => (
                         <div key={index} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                           <div className="flex items-center space-x-3">
                             <Download className="h-4 w-4 text-muted-foreground" />
                             <div>
-                              <p className="font-medium text-sm">{attachment.name}</p>
-                              <p className="text-xs text-muted-foreground uppercase">{attachment.type} file</p>
+                              <p className="font-medium text-sm">{attachment.fileName || attachment.title}</p>
+                              <p className="text-xs text-muted-foreground uppercase">{attachment.fileType || 'file'}</p>
                             </div>
                           </div>
-                          <Button size="sm" variant="outline">
-                            Download
+                          <Button size="sm" variant="outline" asChild>
+                            <a href={attachment.fileUrl || attachment.url} target="_blank" rel="noopener noreferrer">
+                              Download
+                            </a>
                           </Button>
                         </div>
                       ))}
